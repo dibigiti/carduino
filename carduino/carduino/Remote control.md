@@ -28,3 +28,18 @@ I must add a `descriptor` to the `Characteristics`. But that can wait to tomorro
 Very Nice it works! let's save in `gitlab`
 ![[Pasted image 20250613012041.png]]
 
+## Actuall engines
+Now, we need to open the `pinout` of our `xiao arduino`
+Thankfully, the `libreoffice` remembered where it was downloaded. I will add here too
+![[XIAO_ESP32S3_Sense_Pinout.xlsx]]
+
+Now, I connected my engines to the second and third pins:
+![[Pasted image 20250613012550.png]]
+as they supply direct power, because of that, i'll need to power these pins when sending the bluetooth commands.
+
+First, declare your variables:
+![[Pasted image 20250613012849.png]]
+Then, in the `setup` function, declare these pins as outputs:
+![[Pasted image 20250613013017.png]]
+And finally, write the code the processes the bluetooth request
+![[Pasted image 20250613013727.png]]
