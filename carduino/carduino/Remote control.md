@@ -18,6 +18,13 @@ Now, I need to be able to set the `callback` function to when the `Characteristi
 ![[Pasted image 20250613001341.png]]
 We can see the `setCallbacks` which receives a `BLECharacteristicCallbacks` pointer. Fine with me! let's find this object!
 
-
-
+After creating a sub-class of `BLECharacteristicCallbacks` named `EngineCallbacks` and creating the `c'tor, d'tor` and `onWrite` function. and then sending a pointer to the `setCallbacks` function. I was able to see the function being called when I sent a `write` operation from the `nRF Connect` apk!
+![[Pasted image 20250613010301.png]]
+So now, I just need to distinguish between the `Right_Engine` and `Left_Engine` and walla! we have it!
+And finally! we were able to distinguish between the two different commands!
+![[Pasted image 20250613012007.png]]
+![[Pasted image 20250613011952.png]]
+I must add a `descriptor` to the `Characteristics`. But that can wait to tomorrow... Let's start and stop the engines depending on the `Characteristic` value.  
+Very Nice it works! let's save in `gitlab`
+![[Pasted image 20250613012041.png]]
 
