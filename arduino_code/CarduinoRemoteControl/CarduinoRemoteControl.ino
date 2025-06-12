@@ -20,19 +20,58 @@
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
+#include <BLECharacteristic.h>
+#include <cstring>
+
+#define ON 1
+#define OFF 0
+
+#define RIGHT_ENGINE 3
+#define LEFT_ENGINE 2
 
 #define SERVICE_UUID                      "4ab7946e-088c-4c5e-9646-51ffe3baf81d"
 #define CHARACTERISTICS_RIGHT_ENGINE_UUID "7e8823de-7c10-4d9b-aa07-15b3c423155b"
 #define CHARACTERISTICS_LEFT_ENGINE_UUID  "358180b1-abe1-4dbc-8ed1-b712f15e5a18"
 
+class EngineCallback : public BLECharacteristicCallbacks {
+public:
+  EngineCallback() = default;
+  virtual ~EngineCallback() = default;
 
+  virtual void onWrite(BLECharacteristic *pCharacteristic, esp_ble_gatts_cb_param_t *param)
+  {
+    int engine = 0;
+    int action = 0;
+
+    // detect the target engine
+    if(strcmp(CHARACTERISTICS_RIGHT_ENGINE_UUID, pCharacteristic->getUUID().toString().c_str())) {
+      engine = RIGHT_ENGINE; 
+    }
+    else if(strcmp(CHARACTERISTICS_LEFT_ENGINE_UUID, pCharacteristic->getUUID().toString().c_str())) {
+      engine = LEFT_ENGINE;
+    }
+
+    // detect the requested action
+    if(OFF == *(param->write.value)) {
+      action = LOW;
+      Serial.println("Turn off engine");
+    }
+    else if(ON == *(param->write.value)) {
+      action = HIGH;
+      Serial.println("Turn on engine");
+    }
+
+    // Send the action to the engine
+    digitalWrite(engine, action);  
+  };
+};
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
 
-  BLEDevice::init("XIAO_ESP32S3");
+  BLEDevice::init("BatMobile");
 
   // Create The Bluetooth server
   BLEServer *pServer = BLEDevice::createServer();
@@ -47,7 +86,7 @@ void setup() {
     BLECharacteristic::PROPERTY_WRITE
   );
   BLECharacteristic *pCharacterLeftEngine = pRemoteControlService->createCharacteristic(
-    CHARACTERISTICS_RIGHT_ENGINE_UUID,
+    CHARACTERISTICS_LEFT_ENGINE_UUID,
     BLECharacteristic::PROPERTY_READ |
     BLECharacteristic::PROPERTY_WRITE
   );
@@ -55,6 +94,12 @@ void setup() {
   // Set the Characteristics's values
   pCharacterRightEngine->setValue(initial_value);
   pCharacterLeftEngine->setValue(initial_value);
+
+  EngineCallback* engineCallback = new EngineCallback();
+  // Add Callbacks for the Characteristics
+  // TODO: Create BLECharacteristicCallbacks
+  pCharacterRightEngine->setCallbacks(engineCallback);
+  pCharacterLeftEngine->setCallbacks(engineCallback);
 
   // Create an advertising request
   pRemoteControlService->start();
@@ -69,6 +114,8 @@ void setup() {
 
   // TODO: Add callbacks when the value in characteristics changes.
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(RIGHT_ENGINE, OUTPUT);
+  pinMode(LEFT_ENGINE, OUTPUT);
 }
 
 void loop() {
