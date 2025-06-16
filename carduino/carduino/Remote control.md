@@ -43,3 +43,10 @@ Then, in the `setup` function, declare these pins as outputs:
 ![[Pasted image 20250613013017.png]]
 And finally, write the code the processes the bluetooth request
 ![[Pasted image 20250613013727.png]]
+## Analog Control
+Today I learned I can control the power of the engines by addressing them as `analog` pins. Which means I can "send" them a value between 0-255 and the power levels of the engine will be according to the power level. 
+![[Pasted image 20250616171759.png]]
+This is a test i've done which shows this!
+Now, I know it's not secure - but, I want to create a mechanism that receives the power level for every engine and just changes the power to the engine accordingly. This was actually very easy to implement. 
+![[Pasted image 20250616172742.png]]
+![[Pasted image 20250616172730.png]]

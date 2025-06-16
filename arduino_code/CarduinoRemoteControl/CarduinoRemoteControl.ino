@@ -43,26 +43,23 @@ public:
     int engine = 0;
     int action = 0;
 
+    // Insert the requested voltage level to the engine power
+    // We Might need to check that the value is in the right target values. (0-255)
+    action = *(param->write.value);
+
     // detect the target engine
     if(strcmp(CHARACTERISTICS_RIGHT_ENGINE_UUID, pCharacteristic->getUUID().toString().c_str())) {
       engine = RIGHT_ENGINE; 
     }
     else if(strcmp(CHARACTERISTICS_LEFT_ENGINE_UUID, pCharacteristic->getUUID().toString().c_str())) {
       engine = LEFT_ENGINE;
+
+      // Left's engine's propeller is connected backwords - So' i'll try to power up the engine in the other directorion:
+      //engine *= -1;
     }
 
-    // detect the requested action
-    if(OFF == *(param->write.value)) {
-      action = LOW;
-      Serial.println("Turn off engine");
-    }
-    else if(ON == *(param->write.value)) {
-      action = HIGH;
-      Serial.println("Turn on engine");
-    }
-
-    // Send the action to the engine
-    digitalWrite(engine, action);  
+    // Send the action to the engine  
+    analogWrite(engine, action);  
   };
 };
 
